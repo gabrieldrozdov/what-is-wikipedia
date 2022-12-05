@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>What is Wikipedia? / Library</title>
+	<link rel="icon" href="../assets/favicon.png">
+	<link rel="stylesheet" href="../style.css">
+	<style>
+		.library-container {
+			width: 100vw;
+			height: 100vh;
+			display: flex;
+			align-items: flex-end;
+			overflow-y: hidden;
+			overflow-x: scroll;
+		}
+		@keyframes book-in {
+			from {
+				transform: translateY(100%);
+			}
+			to {
+				transform: translateY(0%);
+			}
+		}
+		.library-container div {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: var(--md);
+			writing-mode: vertical-rl;
+			border-top: 1px solid var(--green);
+			border-right: 1px solid var(--green);
+			border-left: 1px solid var(--green);
+			background-color: var(--green-light);
+			padding: 20px;
+			margin: 0 -1px;
+			max-height: 80vh;
+			transition: transform .2s;
+			animation-name: book-in;
+			animation-duration: 1s;
+		}
+		.library-container div:hover {
+			transform: translateY(-10vh);
+		}
+		.library-container div a {
+			border: 1px solid var(--green-dark);
+			background-color: var(--green);
+			padding: 20px;
+			color: black;
+			text-decoration: none;
+		}
+		.library-container div a:hover {
+			background-color: var(--green-dark);
+		}
+		.book-gray {
+			border-top: 1px solid var(--gray) !important;
+			border-right: 1px solid var(--gray) !important;
+			border-left: 1px solid var(--gray) !important;
+			background-color: var(--gray-light) !important;
+		}
+		.book-gray a {
+			border: 1px solid var(--gray-dark) !important;
+			background-color: var(--gray) !important;
+		}
+		.book-gray a:hover {
+			background-color: var(--gray-dark) !important;
+		}
+
+		/* SCROLLBAR */
+		::-webkit-scrollbar {
+			width: 20px;
+			height: 20px;
+		}
+		::-webkit-scrollbar-track {
+			background: var(--green-light);
+			border: 1px solid var(--green)
+		}
+		::-webkit-scrollbar-thumb {
+			background: var(--green);
+			border: 1px solid var(--green-dark);
+			padding: 20px;
+		}
+		::-webkit-scrollbar-thumb:hover {
+			background: var(--green-dark);
+			border: var(--green);
+		}
+	</style>
+</head>
+<body>
+	<iframe src="" class="wiki-frame"></iframe>
+	<div class="library-container"></div>
+
+	<script>
+		let container = document.querySelector(".library-container");
+		let frame = document.querySelector("iframe");
+
+		/* Build Wikipedia api URL and fetch, then build spaces */
+		let url = "https://en.wikipedia.org/w/api.php"; 
+		let params = {
+			action: "query",
+			format: "json",
+			list: "random",
+			rnnamespace: "0",
+			rnlimit: "100"
+		};
+		url = url + "?origin=*";
+
+		let newContent = "";
+		Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
+		fetch(url)
+			.then(function(response) { return response.json(); })
+			.then(function(response) {
+				let randoms = response.query.random;
+				let temp = "";
+				for (let i=0; i<100; i++) {
+					let link = String(randoms[i].title);
+					temp += `<div id="book${i+1}" style="display: none;"><a href="https://en.wikipedia.org/wiki/${link.replace("'", "%27")}" target="_blank" onmouseover='changeURL("https://en.wikipedia.org/wiki/${link.replace("'", "%27")}")'>${link}</a></div>`
+				}
+				temp = `<div id="book0" style="display: none;" class="book-gray"><a href="../">Back Home</a></div>` + temp + `<div id="book101" style="display: none;" class="book-gray"><a href=".">Restart</a></div>`;
+				container.innerHTML = temp;
+				let i = 0;
+				let loop = setInterval(() => {
+					let book = document.querySelector("#book"+i);
+					book.style.display = "flex";
+					i++;
+					if (i == 102) {
+						clearInterval(loop);
+					}
+				}, 100)
+			})
+			.catch(function(error){console.log(error);});
+
+		function changeURL(newSrc) {
+			frame.src = newSrc;
+		}
+	</script>
+</body>
+</html>

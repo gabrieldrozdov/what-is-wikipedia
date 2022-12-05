@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>What is Wikipedia? / Gallery</title>	<link rel="icon" href="../assets/favicon.png">
+	<link rel="stylesheet" href="../style.css">
+	<style>
+		body {
+			overflow: hidden;
+		}
+		.gallery-container {
+			width: 100vw;
+			height: 100vh;
+			overflow: hidden;
+			display: grid;
+			grid-template-columns: repeat(8, 12.5vw);
+			grid-template-rows: repeat(8, 12.5vh);
+			justify-items: center;
+			align-items: center;
+		}
+		.gallery-container div {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: var(--xs);
+			border-top: 1px solid var(--pink);
+			border-right: 1px solid var(--pink);
+			border-left: 1px solid var(--pink);
+			background-color: var(--pink-light);
+			padding: 10px;
+			margin: 0 -1px;
+			transition: transform 2s;
+		}
+		.gallery-container div:hover {
+			z-index: 999;
+		}
+		.gallery-container div a {
+			border: 1px solid var(--pink-dark);
+			background-color: var(--pink);
+			padding: 10px;
+			color: black;
+			text-decoration: none;
+			word-wrap: break-word;
+		}
+		.gallery-container div a:hover {
+			background-color: var(--pink-dark);
+		}
+		.gallery-gray {
+			border-top: 1px solid var(--gray) !important;
+			border-right: 1px solid var(--gray) !important;
+			border-left: 1px solid var(--gray) !important;
+			background-color: var(--gray-light) !important;
+			z-index: 999;
+		}
+		.gallery-gray a {
+			border: 1px solid var(--gray-dark) !important;
+			background-color: var(--gray) !important;
+		}
+		.gallery-gray a:hover {
+			background-color: var(--gray-dark) !important;
+		}
+	</style>
+</head>
+<body>
+	<iframe src="" class="wiki-frame"></iframe>
+	<div class="gallery-container"></div>
+
+	<script>
+		let container = document.querySelector(".gallery-container");
+		let frame = document.querySelector("iframe");
+
+		/* Build Wikipedia api URL and fetch, then build spaces */
+		let url = "https://en.wikipedia.org/w/api.php"; 
+		let params = {
+			action: "query",
+			format: "json",
+			list: "random",
+			rnnamespace: "6",
+			rnlimit: "62"
+		};
+		url = url + "?origin=*";
+
+		let newContent = "";
+		Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
+		fetch(url)
+			.then(function(response) { return response.json(); })
+			.then(function(response) {
+				let randoms = response.query.random;
+				console.log(randoms);
+				let temp = "";
+				for (let i=0; i<62; i++) {
+					let link = String(randoms[i].title);
+					temp += `<div id="painting${i+1}" style="transform:rotate(${Math.random()*360-360}deg) translateY(-300vh);" onmouseover="galleryFlip(this)"><a href="https://en.wikipedia.org/wiki/${link.replace("'", "%27")}" target="_blank" onmouseover='changeURL("https://en.wikipedia.org/wiki/${link.replace("'", "%27")}")'>${link.replace('File:','')}</a></div>`
+				}
+				temp = `<div id="painting0" class="gallery-gray" style="transform:rotate(${Math.random()*360-360}deg) translateY(-300vh);" onmouseover="galleryFlip(this)"><a href="../">Back Home</a></div>` + temp + `<div id="painting63" class="gallery-gray" style="transform:rotate(${Math.random()*360-360}deg) translateY(-300vh);" onmouseover="galleryFlip(this)"><a href=".">Restart</a></div>`;
+				container.innerHTML = temp;
+				let i = 0;
+				let loop = setInterval(() => {
+					let painting = document.querySelector("#painting"+i);
+					painting.style.transform = `rotate(${Math.random()*60-30}deg) translateY(0vh)`;
+					i++;
+					if (i == 64) {
+						clearInterval(loop);
+					}
+				}, 100)
+			})
+			.catch(function(error){console.log(error);});
+
+		function changeURL(newSrc) {
+			frame.src = newSrc;
+		}
+		
+		function galleryFlip(e) {
+			e.style.transform = `rotate(${Math.random()*360-360}deg)`;
+		}
+	</script>
+</body>
+</html>

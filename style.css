@@ -1,0 +1,238 @@
+@font-face {
+	font-family: "Biolinum";
+	src: url("assets/fonts/LinBiolinum_R.otf");
+}
+@font-face {
+	font-family: "Biolinum";
+	src: url("assets/fonts/LinBiolinum_RI.otf");
+	font-style: italic;
+}
+@font-face {
+	font-family: "Biolinum";
+	src: url("assets/fonts/LinBiolinum_RB.otf");
+	font-weight: bold;
+}
+@font-face {
+	font-family: "Biolinum Tiles";
+	src: url("assets/fonts/LinBiolinum_K.otf");
+}
+@font-face {
+	font-family: "Libertine";
+	src: url("assets/fonts/LinLibertine_R.otf");
+}
+@font-face {
+	font-family: "Libertine";
+	src: url("assets/fonts/LinLibertine_RI.otf");
+	font-style: italic;
+}
+@font-face {
+	font-family: "Libertine";
+	src: url("assets/fonts/LinLibertine_RB.otf");
+	font-weight: bold;
+}
+@font-face {
+	font-family: "Libertine";
+	src: url("assets/fonts/LinLibertine_RBI.otf");
+	font-style: italic;
+	font-weight: bold;
+}
+@font-face {
+	font-family: "Libertine Display";
+	src: url("assets/fonts/LinLibertine_DR.otf");
+}
+@font-face {
+	font-family: "Libertine Mono";
+	src: url("assets/fonts/LinLibertine_M.otf");
+}
+:root {
+	--xl: 64px;
+	--lg: 48px;
+	--md: 36px;
+	--sm: 24px;
+	--xs: 18px;
+	--link: #3466cc;
+	--green: #cef2e0;
+	--green-light: #f5fffa;
+	--green-dark: #a3bfb1;
+	--green-bright: #00f279;
+	--blue: #cedef2;
+	--blue-light: #f5fafe;
+	--blue-dark: #a3b0c0;
+	--blue-bright: #006cf2;
+	--pink: #dccff2;
+	--pink-light: #faf5ff;
+	--pink-dark: #afa2bf;
+	--pink-bright: #5b00f2;
+	--gray: #eeeeee;
+	--gray-light: #f6f6f6;
+	--gray-dark: #dddddd;
+}
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	font-family: "Biolinum", sans-serif;
+}
+a {
+	color: var(--link);
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+.home {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(255,255,255,.9);
+}
+.home-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 40px;
+	padding: 40px;
+	max-width: 1000px;
+	width: 100%;
+}
+.wikipedia {
+	max-width: 400px;
+	width: 100%;
+}
+.box-gray {
+	border: 1px solid var(--gray);
+	background-color: var(--gray-light);
+	padding: 20px;
+	width: 100%;
+}
+.box-gray .box-heading {
+	border: 1px solid var(--gray-dark);
+	background-color: var(--gray);
+	cursor: pointer;
+}
+.box-gray .box-heading:hover {
+	border: 1px solid var(--gray);
+	background-color: var(--gray-dark);
+}
+.box-green {
+	border: 1px solid var(--green);
+	background-color: var(--green-light);
+	padding: 20px;
+	width: 100%;
+}
+.box-green .box-heading {
+	border: 1px solid var(--green-dark);
+	background-color: var(--green);
+	cursor: pointer;
+}
+.box-green .box-heading:hover {
+	border: 1px solid var(--green);
+	background-color: var(--green-dark);
+}
+.box-blue {
+	border: 1px solid var(--blue);
+	background-color: var(--blue-light);
+	padding: 20px;
+	width: 100%;
+}
+.box-blue .box-heading {
+	border: 1px solid var(--blue-dark);
+	background-color: var(--blue);
+	cursor: pointer;
+}
+.box-blue .box-heading:hover {
+	border: 1px solid var(--blue);
+	background-color: var(--blue-dark);
+}
+.box-pink {
+	border: 1px solid var(--pink);
+	background-color: var(--pink-light);
+	padding: 20px;
+	width: 100%;
+}
+.box-pink .box-heading {
+	border: 1px solid var(--pink-dark);
+	background-color: var(--pink);
+	cursor: pointer;
+}
+.box-pink .box-heading:hover {
+	border: 1px solid var(--pink);
+	background-color: var(--pink-dark);
+}
+.box-heading {
+	padding: 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.box-heading h1 {
+	font-family: "Libertine Display";
+	font-weight: normal;
+	font-size: var(--xl);
+	color: black;
+}
+.box-heading:hover {
+	text-decoration: none;
+}
+.box-body {
+	display: none;
+	flex-direction: column;
+	gap: 20px;
+	font-family: "Biolinum";
+	font-size: var(--sm);
+	line-height: 1.3em;
+	padding-top: 1.3em;
+}
+.box-body-show {
+	display: flex;
+}
+.arrow {
+	height: 50px;
+	transition: transform .2s;
+}
+.arrow-flip {
+	transform: scaleY(-1);
+}
+.arrow-right {
+	transform: rotate(-90deg);
+}
+.wiki-frame {
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	z-index: -1;
+	pointer-events: none;
+	border: unset;
+}
+@media screen and (max-width: 600px) {
+	:root {
+	  --xl: 36px;
+	  --lg: 30px;
+	  --md: 24px;
+	  --sm: 18px;
+	  --xs: 12px;
+	}
+	.home-container {
+		padding: 20px;
+		gap: 20px;
+	}
+	.box-gray {
+		padding: 10px;
+	}
+	.box-green {
+		padding: 10px;
+	}
+	.box-blue {
+		padding: 10px;
+	}
+	.box-pink {
+		padding: 10px;
+	}
+	.box-heading h1 {
+		font-size: var(--lg);
+	}
+	.arrow {
+		height: 25px;
+	}
+}
+  

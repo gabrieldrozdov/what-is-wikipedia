@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>What is Wikipedia? / Café</title>
+	<link rel="icon" href="../assets/favicon.png">
+	<link rel="stylesheet" href="../style.css">
+	<style>
+		body {
+			overflow: hidden;
+		}
+		.cafe-container {
+			width: 100vw;
+			height: 100vh;
+			overflow: hidden;
+		}
+		.cafe-container div {
+			position: absolute;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: var(--sm);
+			border-top: 1px solid var(--blue);
+			border-right: 1px solid var(--blue);
+			border-left: 1px solid var(--blue);
+			background-color: var(--blue-light);
+			padding: 10px;
+			margin: 0 -1px;
+			transition: transform .2s, top .1s linear, left .1s linear;
+			white-space: nowrap;
+		}
+		.cafe-container div:hover {
+			z-index: 999;
+		}
+		.cafe-container div a {
+			border: 1px solid var(--blue-dark);
+			background-color: var(--blue);
+			padding: 10px;
+			color: black;
+			text-decoration: none;
+		}
+		.cafe-container div a:hover {
+			background-color: var(--blue-dark);
+		}
+		.cafe-gray {
+			border-top: 1px solid var(--gray) !important;
+			border-right: 1px solid var(--gray) !important;
+			border-left: 1px solid var(--gray) !important;
+			background-color: var(--gray-light) !important;
+			z-index: 999;
+		}
+		.cafe-gray a {
+			border: 1px solid var(--gray-dark) !important;
+			background-color: var(--gray) !important;
+		}
+		.cafe-gray a:hover {
+			background-color: var(--gray-dark) !important;
+		}
+	</style>
+</head>
+<body>
+	<iframe src="" class="wiki-frame"></iframe>
+	<div class="cafe-container"></div>
+
+	<script>
+		let container = document.querySelector(".cafe-container");
+		let frame = document.querySelector("iframe");
+
+		/* Build Wikipedia api URL and fetch, then build spaces */
+		let url = "https://en.wikipedia.org/w/api.php"; 
+		let params = {
+			action: "query",
+			format: "json",
+			list: "random",
+			rnnamespace: "1",
+			rnlimit: "50"
+		};
+		url = url + "?origin=*";
+
+		let newContent = "";
+		Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
+		fetch(url)
+			.then(function(response) { return response.json(); })
+			.then(function(response) {
+				let randoms = response.query.random;
+				console.log(randoms);
+				let temp = "";
+				for (let i=0; i<50; i++) {
+					let dirX = 10;
+					let dirY = 10;
+					if (Math.random() < .5) {
+						dirX = -10;
+					}
+					if (Math.random() < .5) {
+						dirY = -10;
+					}
+					let link = String(randoms[i].title);
+					temp += `<div id="person${i+1}" style="transform:scale(0);top:${Math.random()*window.innerHeight}px;left:${Math.random()*window.innerWidth}px;" data-velx="${dirX}" data-vely="${dirY}" onmouseenter="this.dataset.pause='pause'" onmouseleave="this.dataset.pause=''"><a href="https://en.wikipedia.org/wiki/${link.replace("'", "%27")}" target="_blank" onmouseover='changeURL("https://en.wikipedia.org/wiki/${link.replace("'", "%27")}")'>${link.replace('Talk:','')}</a></div>`
+				}
+				temp = `<div id="person0" style="transform:scale(0);top:${Math.random()*window.innerHeight}px;left:${Math.random()*window.innerWidth}px;" class="cafe-gray" data-velx="10" data-vely="10" data-pause="" onmouseenter="this.dataset.pause='pause'" onmouseleave="this.dataset.pause=''"><a href="../">Back Home</a></div>` + temp + `<div id="person51" style="transform:scale(0);top:${Math.random()*window.innerHeight}px;left:${Math.random()*window.innerWidth}px;" class="cafe-gray" data-velx="-10" data-vely="-10" onmouseenter="this.dataset.pause='pause'" onmouseleave="this.dataset.pause=''"><a href=".">Restart</a></div>`;
+				container.innerHTML = temp;
+				cafeAnim();
+				let i = 0;
+				let loop = setInterval(() => {
+					let person = document.querySelector("#person"+i);
+					person.style.transform = "scale(1)";
+					i++;
+					if (i == 52) {
+						clearInterval(loop);
+					}
+				}, 100)
+			})
+			.catch(function(error){console.log(error);});
+
+		function changeURL(newSrc) {
+			frame.src = newSrc;
+		}
+
+		function cafeAnim() {
+			let people = [];
+			for (i=0; i<52; i++) {
+				people.push(document.querySelector("#person"+i));
+
+			}
+			setInterval(() => {
+				for (i=0; i<people.length; i++) {
+					if (people[i].dataset.pause != "pause") {
+						let posX = parseInt(people[i].style.left);
+						let posY = parseInt(people[i].style.top);
+						let velX = parseInt(people[i].dataset.velx);
+						let velY = parseInt(people[i].dataset.vely);
+						people[i].style.left = posX + velX + "px";
+						people[i].style.top = posY + velY + "px";
+
+						if (posX+people[i].offsetWidth > window.innerWidth) {
+							people[i].dataset.velx = -10 + "px";
+						} else if (posX < 0) {
+							people[i].dataset.velx = 10 + "px";
+						}
+
+						if (posY+people[i].offsetHeight > window.innerHeight) {
+							people[i].dataset.vely = -10;
+						} else if (posY < 0) {
+							people[i].dataset.vely = 10;
+						}
+					}
+				}
+			}, 100);
+		}
+	</script>
+</body>
+</html>
