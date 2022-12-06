@@ -62,6 +62,7 @@
 			background-color: var(--gray-dark) !important;
 		}
 	</style>
+	<script src="../assets/Tone.js"></script>
 </head>
 <body>
 	<iframe src="" class="wiki-frame"></iframe>
@@ -70,6 +71,11 @@
 	<script>
 		let container = document.querySelector(".gallery-container");
 		let frame = document.querySelector("iframe");
+		let cols = Math.ceil(Math.random()*5+2);
+		let rows = Math.ceil(Math.random()*5+2);
+		let items = cols*rows-2
+		container.style.gridTemplateColumns = `repeat(${cols}, ${100/cols}vw)`;
+		container.style.gridTemplateRows = `repeat(${rows}, ${100/rows}vh)`;
 
 		/* Build Wikipedia api URL and fetch, then build spaces */
 		let url = "https://en.wikipedia.org/w/api.php"; 
@@ -78,7 +84,7 @@
 			format: "json",
 			list: "random",
 			rnnamespace: "6",
-			rnlimit: "23"
+			rnlimit: items
 		};
 		url = url + "?origin=*";
 
@@ -88,20 +94,38 @@
 			.then(function(response) { return response.json(); })
 			.then(function(response) {
 				let randoms = response.query.random;
-				console.log(randoms);
 				let temp = "";
-				for (let i=0; i<23; i++) {
+				for (let i=0; i<items; i++) {
+					// Random styling
+					let size, sizeRandom, font, fontRandom;
+					sizeRandom = Math.random();
+					fontRandom = Math.random();
+					if (sizeRandom < .25) {
+						size = "var(--lg)";
+					} else if (sizeRandom < .5) {
+						size = "var(--md)";
+					} else if (sizeRandom < .75) {
+						size = "var(--sm)";
+					} else {
+						size = "var(--xs)";
+					}
+					if (fontRandom < .5) {
+						font = "Biolinum";
+					} else {
+						font = "Libertine";
+					}
+					// Create temp string
 					let link = String(randoms[i].title);
-					temp += `<div id="painting${i+1}" style="transform:rotate(${Math.random()*360-360}deg) translateY(-300vh);" onmouseover="galleryFlip(this)"><a href="https://en.wikipedia.org/wiki/${link.replace("'", "%27")}" target="_blank" onmouseover='changeURL("https://en.wikipedia.org/wiki/${link.replace("'", "%27")}")'>${link.replace('File:','')}</a></div>`
+					temp += `<div id="painting${i+1}" style="transform:rotate(${Math.random()*360-360}deg) translateY(-300vh);font-size:${size};font-family:'${font}'" onmouseover="galleryFlip(this)" onmouseenter="note()"><a href="https://en.wikipedia.org/wiki/${link.replace("'", "%27")}" target="_blank" onmouseover='changeURL("https://en.wikipedia.org/wiki/${link.replace("'", "%27")}")'>${link.replace('File:','')}</a></div>`
 				}
-				temp = `<div id="painting0" class="gallery-gray" style="transform:rotate(${Math.random()*360-360}deg) translateY(-300vh);" onmouseover="galleryFlip(this)"><a href="../">Back Home</a></div>` + temp + `<div id="painting24" class="gallery-gray" style="transform:rotate(${Math.random()*360-360}deg) translateY(-300vh);" onmouseover="galleryFlip(this)"><a href=".">Restart</a></div>`;
+				temp = `<div id="painting0" class="gallery-gray" style="transform:rotate(${Math.random()*360-360}deg) translateY(-300vh);" onmouseover="galleryFlip(this)" onmouseenter="note()"><a href="../">Back Home</a></div>` + temp + `<div id="painting${items+1}" class="gallery-gray" style="transform:rotate(${Math.random()*360-360}deg) translateY(-300vh);" onmouseover="galleryFlip(this)" onmouseenter="note()"><a href=".">Restart</a></div>`;
 				container.innerHTML = temp;
 				let i = 0;
 				let loop = setInterval(() => {
 					let painting = document.querySelector("#painting"+i);
 					painting.style.transform = `rotate(${Math.random()*60-30}deg) translateY(0vh)`;
 					i++;
-					if (i == 25) {
+					if (i > items+1) {
 						clearInterval(loop);
 					}
 				}, 100)
@@ -114,6 +138,31 @@
 		
 		function galleryFlip(e) {
 			e.style.transform = `rotate(${Math.random()*360-360}deg)`;
+		}
+
+		/* Hover sounds */
+		let vol = new Tone.Volume(-3);
+		let synth = new Tone.PolySynth();
+		synth.set({
+			oscillator: {
+				type: "amtriangle"
+			},
+			envelope: {
+				attack: 0.05,
+				decay: 0.2,
+				sustain: 0.2,
+				release: 1.5
+			}
+		});
+		synth.chain(vol, Tone.Destination);
+
+		let freq = ["A","B","C","E","F"];
+
+		function note() {
+			let pitch = freq[Math.floor(Math.random()*freq.length)];
+			let octave = String(Math.floor(Math.random()*2+2));
+			let note = pitch+octave;
+			synth.triggerAttackRelease(note, "16n");
 		}
 	</script>
 </body>

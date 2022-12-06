@@ -20,7 +20,6 @@
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			font-size: var(--md);
 			writing-mode: vertical-rl;
 			border-top: 1px solid var(--green);
 			border-right: 1px solid var(--green);
@@ -50,6 +49,7 @@
 			border-right: 1px solid var(--gray) !important;
 			border-left: 1px solid var(--gray) !important;
 			background-color: var(--gray-light) !important;
+			font-size: var(--md);
 		}
 		.book-gray a {
 			border: 1px solid var(--gray-dark) !important;
@@ -78,6 +78,7 @@
 			border: var(--green);
 		}
 	</style>
+	<script src="../assets/Tone.js"></script>
 </head>
 <body>
 	<iframe src="" class="wiki-frame"></iframe>
@@ -86,6 +87,7 @@
 	<script>
 		let container = document.querySelector(".library-container");
 		let frame = document.querySelector("iframe");
+		let items = Math.round(Math.random()*90+10);
 
 		/* Build Wikipedia api URL and fetch, then build spaces */
 		let url = "https://en.wikipedia.org/w/api.php"; 
@@ -94,7 +96,7 @@
 			format: "json",
 			list: "random",
 			rnnamespace: "0",
-			rnlimit: "100"
+			rnlimit: items
 		};
 		url = url + "?origin=*";
 
@@ -105,18 +107,37 @@
 			.then(function(response) {
 				let randoms = response.query.random;
 				let temp = "";
-				for (let i=0; i<100; i++) {
+				for (let i=0; i<items; i++) {
+					// Random styling
+					let size, sizeRandom, font, fontRandom;
+					sizeRandom = Math.random();
+					fontRandom = Math.random();
+					if (sizeRandom < .25) {
+						size = "var(--lg)";
+					} else if (sizeRandom < .5) {
+						size = "var(--md)";
+					} else if (sizeRandom < .75) {
+						size = "var(--sm)";
+					} else {
+						size = "var(--xs)";
+					}
+					if (fontRandom < .5) {
+						font = "Biolinum";
+					} else {
+						font = "Libertine";
+					}
+					// Create temp string
 					let link = String(randoms[i].title);
-					temp += `<div id="book${i+1}"><a href="https://en.wikipedia.org/wiki/${link.replace("'", "%27")}" target="_blank" onmouseover='changeURL("https://en.wikipedia.org/wiki/${link.replace("'", "%27")}")'>${link}</a></div>`
+					temp += `<div id="book${i+1}" style="font-size:${size};font-family:'${font}'"><a href="https://en.wikipedia.org/wiki/${link.replace("'", "%27")}" target="_blank" onmouseover='changeURL("https://en.wikipedia.org/wiki/${link.replace("'", "%27")}")' onmouseenter="note()">${link}</a></div>`
 				}
-				temp = `<div id="book0" class="book-gray"><a href="../">Back Home</a></div>` + temp + `<div id="book101" class="book-gray"><a href=".">Restart</a></div>`;
+				temp = `<div id="book0" class="book-gray" onmouseenter="note()"><a href="../">Back Home</a></div>` + temp + `<div id="book${items+1}" class="book-gray" onmouseenter="note()"><a href=".">Restart</a></div>`;
 				container.innerHTML = temp;
 				let i = 0;
 				let loop = setInterval(() => {
 					let book = document.querySelector("#book"+i);
 					book.style.transform = "unset";
 					i++;
-					if (i == 102) {
+					if (i > items+1) {
 						clearInterval(loop);
 					}
 				}, 100)
@@ -125,6 +146,31 @@
 
 		function changeURL(newSrc) {
 			frame.src = newSrc;
+		}
+
+		/* Hover sounds */
+		let vol = new Tone.Volume(-3);
+		let synth = new Tone.PolySynth();
+		synth.set({
+			oscillator: {
+				type: "fatsine"
+			},
+			envelope: {
+				attack: 0.05,
+				decay: 5,
+				sustain: 0.2,
+				release: 1.5
+			}
+		});
+		synth.chain(vol, Tone.Destination);
+
+		let freq = ["A","D"];
+
+		function note() {
+			let pitch = freq[Math.floor(Math.random()*freq.length)];
+			let octave = String(Math.floor(Math.random()*4+1));
+			let note = pitch+octave;
+			synth.triggerAttackRelease(note, "16n");
 		}
 	</script>
 </body>

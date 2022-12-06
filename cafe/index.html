@@ -21,7 +21,6 @@
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			font-size: var(--sm);
 			border-top: 1px solid var(--blue);
 			border-right: 1px solid var(--blue);
 			border-left: 1px solid var(--blue);
@@ -50,6 +49,7 @@
 			border-left: 1px solid var(--gray) !important;
 			background-color: var(--gray-light) !important;
 			z-index: 999;
+			font-size: var(--md);
 		}
 		.cafe-gray a {
 			border: 1px solid var(--gray-dark) !important;
@@ -59,6 +59,7 @@
 			background-color: var(--gray-dark) !important;
 		}
 	</style>
+	<script src="../assets/Tone.js"></script>
 </head>
 <body>
 	<iframe src="" class="wiki-frame"></iframe>
@@ -67,6 +68,7 @@
 	<script>
 		let container = document.querySelector(".cafe-container");
 		let frame = document.querySelector("iframe");
+		let items = Math.round(Math.random()*25+5);
 
 		/* Build Wikipedia api URL and fetch, then build spaces */
 		let url = "https://en.wikipedia.org/w/api.php"; 
@@ -75,7 +77,7 @@
 			format: "json",
 			list: "random",
 			rnnamespace: "2",
-			rnlimit: "50"
+			rnlimit: items
 		};
 		url = url + "?origin=*";
 
@@ -85,9 +87,9 @@
 			.then(function(response) { return response.json(); })
 			.then(function(response) {
 				let randoms = response.query.random;
-				console.log(randoms);
 				let temp = "";
-				for (let i=0; i<50; i++) {
+				for (let i=0; i<items; i++) {
+					// Random direction
 					let dirX = 10;
 					let dirY = 10;
 					if (Math.random() < .5) {
@@ -96,10 +98,29 @@
 					if (Math.random() < .5) {
 						dirY = -10;
 					}
+					// Random styling
+					let size, sizeRandom, font, fontRandom;
+					sizeRandom = Math.random();
+					fontRandom = Math.random();
+					if (sizeRandom < .25) {
+						size = "var(--lg)";
+					} else if (sizeRandom < .5) {
+						size = "var(--md)";
+					} else if (sizeRandom < .75) {
+						size = "var(--sm)";
+					} else {
+						size = "var(--xs)";
+					}
+					if (fontRandom < .5) {
+						font = "Biolinum";
+					} else {
+						font = "Libertine";
+					}
+					// Create temp string
 					let link = String(randoms[i].title);
-					temp += `<div id="person${i+1}" style="transform:scale(0);top:${Math.random()*window.innerHeight}px;left:${Math.random()*window.innerWidth}px;" data-velx="${dirX}" data-vely="${dirY}" onmouseenter="this.dataset.pause='pause'" onmouseleave="this.dataset.pause=''"><a href="https://en.wikipedia.org/wiki/${link.replace("'", "%27")}" target="_blank" onmouseover='changeURL("https://en.wikipedia.org/wiki/${link.replace("'", "%27")}")'>${link.replace('User:','')}</a></div>`
+					temp += `<div id="person${i+1}" style="transform:scale(0);top:${Math.random()*window.innerHeight}px;left:${Math.random()*window.innerWidth}px;font-size:${size};font-family:'${font}'" data-velx="${dirX}" data-vely="${dirY}" onmouseenter="this.dataset.pause='pause';note()" onmouseleave="this.dataset.pause=''"><a href="https://en.wikipedia.org/wiki/${link.replace("'", "%27")}" target="_blank" onmouseover='changeURL("https://en.wikipedia.org/wiki/${link.replace("'", "%27")}")'>${link.replace('User:','')}</a></div>`
 				}
-				temp = `<div id="person0" style="transform:scale(0);top:${Math.random()*window.innerHeight}px;left:${Math.random()*window.innerWidth}px;" class="cafe-gray" data-velx="10" data-vely="10" data-pause="" onmouseenter="this.dataset.pause='pause'" onmouseleave="this.dataset.pause=''"><a href="../">Back Home</a></div>` + temp + `<div id="person51" style="transform:scale(0);top:${Math.random()*window.innerHeight}px;left:${Math.random()*window.innerWidth}px;" class="cafe-gray" data-velx="-10" data-vely="-10" onmouseenter="this.dataset.pause='pause'" onmouseleave="this.dataset.pause=''"><a href=".">Restart</a></div>`;
+				temp = `<div id="person0" style="transform:scale(0);top:${Math.random()*window.innerHeight}px;left:${Math.random()*window.innerWidth}px;" class="cafe-gray" data-velx="10" data-vely="10" data-pause="" onmouseenter="this.dataset.pause='pause';note()" onmouseleave="this.dataset.pause=''"><a href="../">Back Home</a></div>` + temp + `<div id="person${items+1}" style="transform:scale(0);top:${Math.random()*window.innerHeight}px;left:${Math.random()*window.innerWidth}px;" class="cafe-gray" data-velx="-10" data-vely="-10" onmouseenter="this.dataset.pause='pause';note()" onmouseleave="this.dataset.pause=''"><a href=".">Restart</a></div>`;
 				container.innerHTML = temp;
 				cafeAnim();
 				let i = 0;
@@ -107,7 +128,7 @@
 					let person = document.querySelector("#person"+i);
 					person.style.transform = "scale(1)";
 					i++;
-					if (i == 52) {
+					if (i > items+1) {
 						clearInterval(loop);
 					}
 				}, 100)
@@ -120,7 +141,7 @@
 
 		function cafeAnim() {
 			let people = [];
-			for (i=0; i<52; i++) {
+			for (i=0; i<items+2; i++) {
 				people.push(document.querySelector("#person"+i));
 
 			}
@@ -148,6 +169,31 @@
 					}
 				}
 			}, 100);
+		}
+
+		/* Hover sounds */
+		let vol = new Tone.Volume(-3);
+		let synth = new Tone.PolySynth();
+		synth.set({
+			oscillator: {
+				type: "amsquare"
+			},
+			envelope: {
+				attack: 0.05,
+				decay: 0.1,
+				sustain: 0.1,
+				release: .1
+			}
+		});
+		synth.chain(vol, Tone.Destination);
+
+		let freq = ["Bb","Db","F"];
+
+		function note() {
+			let pitch = freq[Math.floor(Math.random()*freq.length)];
+			let octave = String(Math.floor(Math.random()*2+3));
+			let note = pitch+octave;
+			synth.triggerAttackRelease(note, "64n");
 		}
 	</script>
 </body>
