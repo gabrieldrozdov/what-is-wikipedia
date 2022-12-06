@@ -74,7 +74,7 @@
 			action: "query",
 			format: "json",
 			list: "random",
-			rnnamespace: "1",
+			rnnamespace: "2",
 			rnlimit: "50"
 		};
 		url = url + "?origin=*";
@@ -97,7 +97,7 @@
 						dirY = -10;
 					}
 					let link = String(randoms[i].title);
-					temp += `<div id="person${i+1}" style="transform:scale(0);top:${Math.random()*window.innerHeight}px;left:${Math.random()*window.innerWidth}px;" data-velx="${dirX}" data-vely="${dirY}" onmouseenter="this.dataset.pause='pause'" onmouseleave="this.dataset.pause=''"><a href="https://en.wikipedia.org/wiki/${link.replace("'", "%27")}" target="_blank" onmouseover='changeURL("https://en.wikipedia.org/wiki/${link.replace("'", "%27")}")'>${link.replace('Talk:','')}</a></div>`
+					temp += `<div id="person${i+1}" style="transform:scale(0);top:${Math.random()*window.innerHeight}px;left:${Math.random()*window.innerWidth}px;" data-velx="${dirX}" data-vely="${dirY}" onmouseenter="this.dataset.pause='pause'" onmouseleave="this.dataset.pause=''"><a href="https://en.wikipedia.org/wiki/${link.replace("'", "%27")}" target="_blank" onmouseover='changeURL("https://en.wikipedia.org/wiki/${link.replace("'", "%27")}")'>${link.replace('User:','')}</a></div>`
 				}
 				temp = `<div id="person0" style="transform:scale(0);top:${Math.random()*window.innerHeight}px;left:${Math.random()*window.innerWidth}px;" class="cafe-gray" data-velx="10" data-vely="10" data-pause="" onmouseenter="this.dataset.pause='pause'" onmouseleave="this.dataset.pause=''"><a href="../">Back Home</a></div>` + temp + `<div id="person51" style="transform:scale(0);top:${Math.random()*window.innerHeight}px;left:${Math.random()*window.innerWidth}px;" class="cafe-gray" data-velx="-10" data-vely="-10" onmouseenter="this.dataset.pause='pause'" onmouseleave="this.dataset.pause=''"><a href=".">Restart</a></div>`;
 				container.innerHTML = temp;

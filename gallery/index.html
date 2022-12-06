@@ -15,8 +15,8 @@
 			height: 100vh;
 			overflow: hidden;
 			display: grid;
-			grid-template-columns: repeat(8, 12.5vw);
-			grid-template-rows: repeat(8, 12.5vh);
+			grid-template-columns: repeat(5, 20vw);
+			grid-template-rows: repeat(5, 20vh);
 			justify-items: center;
 			align-items: center;
 		}
@@ -78,7 +78,7 @@
 			format: "json",
 			list: "random",
 			rnnamespace: "6",
-			rnlimit: "62"
+			rnlimit: "23"
 		};
 		url = url + "?origin=*";
 
@@ -90,18 +90,18 @@
 				let randoms = response.query.random;
 				console.log(randoms);
 				let temp = "";
-				for (let i=0; i<62; i++) {
+				for (let i=0; i<23; i++) {
 					let link = String(randoms[i].title);
 					temp += `<div id="painting${i+1}" style="transform:rotate(${Math.random()*360-360}deg) translateY(-300vh);" onmouseover="galleryFlip(this)"><a href="https://en.wikipedia.org/wiki/${link.replace("'", "%27")}" target="_blank" onmouseover='changeURL("https://en.wikipedia.org/wiki/${link.replace("'", "%27")}")'>${link.replace('File:','')}</a></div>`
 				}
-				temp = `<div id="painting0" class="gallery-gray" style="transform:rotate(${Math.random()*360-360}deg) translateY(-300vh);" onmouseover="galleryFlip(this)"><a href="../">Back Home</a></div>` + temp + `<div id="painting63" class="gallery-gray" style="transform:rotate(${Math.random()*360-360}deg) translateY(-300vh);" onmouseover="galleryFlip(this)"><a href=".">Restart</a></div>`;
+				temp = `<div id="painting0" class="gallery-gray" style="transform:rotate(${Math.random()*360-360}deg) translateY(-300vh);" onmouseover="galleryFlip(this)"><a href="../">Back Home</a></div>` + temp + `<div id="painting24" class="gallery-gray" style="transform:rotate(${Math.random()*360-360}deg) translateY(-300vh);" onmouseover="galleryFlip(this)"><a href=".">Restart</a></div>`;
 				container.innerHTML = temp;
 				let i = 0;
 				let loop = setInterval(() => {
 					let painting = document.querySelector("#painting"+i);
 					painting.style.transform = `rotate(${Math.random()*60-30}deg) translateY(0vh)`;
 					i++;
-					if (i == 64) {
+					if (i == 25) {
 						clearInterval(loop);
 					}
 				}, 100)

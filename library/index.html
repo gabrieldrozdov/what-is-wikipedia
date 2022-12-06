@@ -16,14 +16,6 @@
 			overflow-y: hidden;
 			overflow-x: scroll;
 		}
-		@keyframes book-in {
-			from {
-				transform: translateY(100%);
-			}
-			to {
-				transform: translateY(0%);
-			}
-		}
 		.library-container div {
 			display: flex;
 			align-items: center;
@@ -37,12 +29,11 @@
 			padding: 20px;
 			margin: 0 -1px;
 			max-height: 80vh;
-			transition: transform .2s;
-			animation-name: book-in;
-			animation-duration: 1s;
+			transition: transform 1s;
+			transform: translateY(100%);
 		}
 		.library-container div:hover {
-			transform: translateY(-10vh);
+			transform: translateY(-18vh) !important;
 		}
 		.library-container div a {
 			border: 1px solid var(--green-dark);
@@ -116,14 +107,14 @@
 				let temp = "";
 				for (let i=0; i<100; i++) {
 					let link = String(randoms[i].title);
-					temp += `<div id="book${i+1}" style="display: none;"><a href="https://en.wikipedia.org/wiki/${link.replace("'", "%27")}" target="_blank" onmouseover='changeURL("https://en.wikipedia.org/wiki/${link.replace("'", "%27")}")'>${link}</a></div>`
+					temp += `<div id="book${i+1}"><a href="https://en.wikipedia.org/wiki/${link.replace("'", "%27")}" target="_blank" onmouseover='changeURL("https://en.wikipedia.org/wiki/${link.replace("'", "%27")}")'>${link}</a></div>`
 				}
-				temp = `<div id="book0" style="display: none;" class="book-gray"><a href="../">Back Home</a></div>` + temp + `<div id="book101" style="display: none;" class="book-gray"><a href=".">Restart</a></div>`;
+				temp = `<div id="book0" class="book-gray"><a href="../">Back Home</a></div>` + temp + `<div id="book101" class="book-gray"><a href=".">Restart</a></div>`;
 				container.innerHTML = temp;
 				let i = 0;
 				let loop = setInterval(() => {
 					let book = document.querySelector("#book"+i);
-					book.style.display = "flex";
+					book.style.transform = "unset";
 					i++;
 					if (i == 102) {
 						clearInterval(loop);
