@@ -73,7 +73,7 @@
 		let frame = document.querySelector("iframe");
 		let cols = Math.ceil(Math.random()*5+2);
 		let rows = Math.ceil(Math.random()*5+2);
-		let items = cols*rows-2
+		let items = cols*rows-2;
 		container.style.gridTemplateColumns = `repeat(${cols}, ${100/cols}vw)`;
 		container.style.gridTemplateRows = `repeat(${rows}, ${100/rows}vh)`;
 
